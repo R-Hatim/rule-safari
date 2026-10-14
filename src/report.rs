@@ -241,7 +241,7 @@ mod tests {
         assert_eq!(specimens.len(), 5);
         assert_eq!(specimens[0]["rank"], 1);
         assert!(specimens.iter().all(|s| s["zoo"].as_array().unwrap().len() <= 8));
-        assert!(data["named"].as_array().unwrap().iter().any(|n| n["name"] == "Life"));
+        assert!(data["named"].as_array().unwrap().iter().any(|n| n["name"] == "Conway's Life"));
         let titles: Vec<&str> =
             data["records"].as_array().unwrap().iter().map(|r| r["title"].as_str().unwrap()).collect();
         assert!(titles.contains(&"Richest zoo"), "{titles:?}");

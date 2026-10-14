@@ -11,7 +11,7 @@ Conway's Game of Life is one rule among 262,144 of the same shape. Written as **
 
 Rule Safari screens every rule that keeps empty space empty (no B0), studies the most promising 1,500 up close, and writes a field guide. The guide is one self-contained HTML page where each chosen rule runs live next to the spaceships and oscillators the hunt caught in it.
 
-The hunt never sees rule names. On the default seed it still ranks **Conway's Life No. 2** out of 131,072, just behind its near-twin B3/S238. Pedestrian Life, HighLife, DryLife and Day & Night all pass the first screen on merit too.
+The hunt never sees rule names. On the default seed it still ranks **Conway's Life No. 2** out of 131,072, just behind its close relative EightLife, and seven of its top ten are rules that already have names on LifeWiki.
 
 ## Quick start
 
@@ -44,7 +44,7 @@ cargo run --release -- watch B36/S23
 `inspect B3/S23` prints, trimmed:
 
 ```text
-B3/S23 · Life
+B3/S23 · Conway's Life
   temperament  complex: lively for all 600 generations, things travel through sparse space
   score        74.4   (quick screen: 67.7)
   soups        lifespan 100.0%  activity 3.5%  motion 5.2%  density 5.3%  structure 0.14  extinct 0.0%
@@ -69,11 +69,11 @@ The first two drawings are the glider and the blinker, rediscovered from random 
 
 ## What the default hunt found
 
-Seed 1: 131,072 rules screened, 1,528 studied closely, 93 seconds on a 16-core laptop.
+Seed 1: 131,072 rules screened, 1,540 studied closely, 93 seconds on a 16-core laptop.
 
-- **Life's family takes the top of the ranking.** Ten of the top 12 contain Life's B3/S23 core: Life itself (No. 2), Pedestrian Life (No. 6), HighLife (No. 10), and seven unnamed relatives led by B3/S238 at No. 1.
-- **Famous rules pass the screen without help.** Life passed the cheap first screen at No. 3, Day & Night at No. 356, Pedestrian Life at No. 765, DryLife at No. 994 and HighLife at No. 1,077, all inside the 1,500 that went on.
-- **33 kinds of spaceship turned up across 26 rules**, along with 13,043 oscillator species.
+- **Life's family takes the top of the ranking.** Ten of the top 12 contain Life's B3/S23 core, and seven of them are named rules on LifeWiki: EightLife (No. 1), Conway's Life (No. 2), HoneyLife (No. 3), IronLife (No. 5), Pedestrian Life (No. 6), LowDeath (No. 7) and HighLife (No. 10).
+- **They got there on merit.** All seven passed the cheap first screen inside the 1,500 that went on, from Conway's Life at No. 3 and EightLife at No. 21 to HighLife at No. 1,077. So did DryLife (No. 22 overall) and Day & Night (No. 34).
+- **34 kinds of spaceship turned up across 27 rules**, along with 13,134 oscillator species.
 - **The fastest spaceship moves at c**, one cell per generation. It has 4 cells and period 1, and lives in Seeds, Live Free or Die and a few other B2 rules.
 - **The slow ones** include a c/8 diagonal ship in B367/S03468, a 13-cell c/8 orthogonal ship in B347/S268, and c/7 diagonal ships in B36/S245, B3/S245 and B38/S02458.
 
@@ -132,7 +132,7 @@ Every random number comes from a stream keyed by (seed, rule, soup number), so a
 
 ## Limits
 
-- **Named rules are always studied,** so the famous-rules table is complete. The gallery marks which of them made the first 1,500 on merit.
+- **Named rules are always studied,** so the famous-rules table is complete. The 52 names come from LifeWiki's list of Life-like rules, checked against its November 2025 archived copy. The gallery marks which of them made the first 1,500 on merit.
 - **The census only sees small, fast creatures:** at most 16×16 cells, 64 live cells and period 16. Bigger or slower ships are missed. Day & Night is known to have spaceships, but none were caught.
 - **Rules with B0 are left out.** They make empty space flash on and off. `inspect` accepts them but warns that its census can't be trusted.
 - **The scores are a judgement call.** They encode one idea of "interesting": lively, sparse, and full of things that move. Other weightings would find other gems.

@@ -15,7 +15,7 @@ fn inspect_finds_the_glider_in_life() {
     let out = run(&["inspect", "B3/S23"]);
     assert!(out.status.success());
     let text = stdout(&out);
-    assert!(text.starts_with("B3/S23 · Life"), "{text}");
+    assert!(text.starts_with("B3/S23 · Conway's Life"), "{text}");
     assert!(text.contains("c/4 diagonal"), "{text}");
 }
 
@@ -39,7 +39,7 @@ fn watch_prints_one_plain_frame_when_piped() {
     assert!(out.status.success());
     let text = stdout(&out);
     let lines: Vec<&str> = text.lines().collect();
-    assert!(lines[0].starts_with("B3/S23 · Life · generation 5"), "{text}");
+    assert!(lines[0].starts_with("B3/S23 · Conway's Life · generation 5"), "{text}");
     assert_eq!(lines.len(), 1 + 5, "a title and two cell rows per line");
     assert!(lines[1..].iter().all(|l| l.chars().count() == 20));
     assert!(!text.contains('\x1b'), "no escape codes when not a terminal");

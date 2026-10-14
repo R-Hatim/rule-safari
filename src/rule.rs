@@ -51,18 +51,21 @@ impl Rule {
     }
 }
 
-/// Well-known named rules, as listed on LifeWiki's "List of Life-like cellular automata".
+/// Well-known named rules, from LifeWiki's "List of Life-like rules" (checked against the
+/// copy archived on 2025-11-12). Some have other names too: Vote 4/5 is also called Anneal,
+/// Vote is also called Majority (not to be confused with the rule named Majority below),
+/// Morley is also called Move, and EightLife is also called Pulsar Life.
 const NAMED: &[(&str, &str)] = &[
-    ("B3/S23", "Life"),
+    ("B3/S23", "Conway's Life"),
     ("B36/S23", "HighLife"),
     ("B3678/S34678", "Day & Night"),
     ("B2/S", "Seeds"),
-    ("B3/S012345678", "Life without Death"),
-    ("B34/S34", "34 Life"),
+    ("B3/S012345678", "Life without death"),
+    ("B34/S34", "3-4 Life"),
     ("B35678/S5678", "Diamoeba"),
-    ("B36/S125", "2x2"),
+    ("B36/S125", "2×2"),
     ("B368/S245", "Morley"),
-    ("B4678/S35678", "Anneal"),
+    ("B4678/S35678", "Vote 4/5"),
     ("B3/S12345", "Maze"),
     ("B3/S1234", "Mazectric"),
     ("B3/S45678", "Coral"),
@@ -76,17 +79,35 @@ const NAMED: &[(&str, &str)] = &[
     ("B2/S0", "Live Free or Die"),
     ("B3678/S235678", "Stains"),
     ("B378/S235678", "Coagulations"),
-    ("B45678/S2345", "Walled Cities"),
-    ("B5678/S45678", "Majority"),
+    ("B45678/S2345", "Walled cities"),
+    ("B5678/S45678", "Vote"),
+    ("B45678/S5678", "Majority"),
     ("B37/S23", "DryLife"),
     ("B38/S23", "Pedestrian Life"),
     ("B3/S12", "Flock"),
     ("B1/S012345678", "H-trees"),
     ("B25678/S5678", "Iceballs"),
     ("B3457/S4568", "Gems"),
+    ("B3567/S15678", "Bugs"),
     ("B35678/S4678", "Holstein"),
     ("B345/S4567", "Assimilation"),
     ("B378/S012345678", "Plow World"),
+    ("B3/S13", "LowLife"),
+    ("B3678/S135678", "Castles"),
+    ("B45/S12345", "Electrified Maze"),
+    ("B3/S023", "DotLife"),
+    ("B3/S238", "EightLife"),
+    ("B3/S1237", "SnowLife"),
+    ("B3/S124", "Corrosion of Conformity"),
+    ("B3578/S24678", "Geology"),
+    ("B3/S0248", "Star Trek"),
+    ("B34/S456", "Bacteria"),
+    ("B35/S23", "Grounded Life"),
+    ("B368/S238", "LowDeath"),
+    ("B38/S238", "HoneyLife"),
+    ("B36/S238", "IronLife"),
+    ("B45/S1235", "Oscillators Rule"),
+    ("B56/S14568", "Rings 'n' Slugs"),
 ];
 
 /// All named rules, parsed.
@@ -208,7 +229,7 @@ mod tests {
         rules.sort();
         rules.dedup();
         assert_eq!(rules.len(), named.len(), "a rule is listed twice");
-        assert_eq!(Rule::LIFE.name(), Some("Life"));
+        assert_eq!(Rule::LIFE.name(), Some("Conway's Life"));
         assert!(named.iter().all(|(r, _)| !r.has_b0()));
     }
 }
