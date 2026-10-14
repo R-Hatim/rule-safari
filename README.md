@@ -2,6 +2,8 @@
 
 **Hunts through all 131,072 Life-like cellular automata for the interesting ones, and catalogues the creatures living in them.**
 
+**[See the live field guide →](https://r-hatim.github.io/rule-safari/)** It's the default hunt's gallery, running in your browser, with nothing to install.
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/gallery-dark.png">
   <img alt="The field guide Rule Safari writes: records of the hunt, then live specimen plates" src="docs/gallery.png">
@@ -126,6 +128,9 @@ assets/
   gallery.html the field-guide template; the hunt embeds its data in it
 tests/
   cli.rs       end-to-end tests of the binary
+docs/
+  index.html   the live demo: safari/gallery.html from the default hunt, plus link-preview tags
+  *.png        screenshots and the link-preview image
 ```
 
 Every random number comes from a stream keyed by (seed, rule, soup number), so a hunt is reproducible no matter how the threads are scheduled. Run the tests with `cargo test --release`.

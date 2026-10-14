@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rule Safari</title>
 <meta name="description" content="A field guide to the Life-like cellular automata, written by rule-safari after screening all 131,072 rules without B0.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Rule Safari: a field guide to the Life-like cellular automata">
+<meta property="og:description" content="All 131,072 Life-like rules screened for the interesting ones, each running live next to the spaceships and oscillators found in it.">
 <style>
   :root {
     --paper: #f3eee2;
@@ -556,7 +559,7 @@
 
   const when = new Date(meta.generatedAt * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
   document.getElementById('colophon').textContent =
-    `Written by rule-safari ${meta.version} on ${when}, seed ${cfg.seed}. Every number here is in results.json, next to this page.`;
+    `Written by rule-safari ${meta.version} on ${when}, seed ${cfg.seed}. Run rule-safari hunt --seed ${cfg.seed} to reproduce it; every number lands in results.json.`;
 })();
 </script>
 </body>

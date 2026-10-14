@@ -6,3 +6,6 @@
 
 # Local design-hook state
 /.impeccable
+
+# Git Bash crash dumps
+*.stackdump
