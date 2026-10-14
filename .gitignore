@@ -3,3 +3,6 @@
 
 # Default output folder of `rule-safari hunt`
 /safari
+
+# Local design-hook state
+/.impeccable

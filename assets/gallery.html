@@ -50,7 +50,6 @@
   a:hover { text-decoration-color: var(--accent); }
   .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
   .mono { font-family: var(--mono); font-size: 0.86em; font-variant-numeric: normal; }
-  .smallcaps { font-variant: all-small-caps; letter-spacing: 0.08em; }
 
   /* Masthead */
   .masthead { padding: 56px 0 40px; border-bottom: 1px solid var(--line); }
@@ -74,13 +73,13 @@
   .records { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
   .record { display: grid; grid-template-columns: 84px 1fr; gap: 14px; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 14px; }
   .record canvas { width: 84px; height: 84px; }
-  .record h3 { margin: 0; font-size: 0.92rem; font-variant: all-small-caps; letter-spacing: 0.05em; color: var(--ochre); font-weight: 600; line-height: 1.25; }
+  .record h3 { margin: 0; font-size: 0.92rem; font-variant: all-small-caps; letter-spacing: 0.05em; color: var(--ochre); font-weight: 600; line-height: 1.35; }
   .record p { margin: 2px 0 0; line-height: 1.35; }
   .record .detail { color: var(--ink-2); font-size: 0.92rem; }
 
   /* Filters */
   .filters { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip { font: inherit; font-size: 0.92rem; color: var(--ink-2); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 4px 13px; cursor: pointer; }
+  .chip { font: inherit; font-size: 0.92rem; line-height: 1.4; color: var(--ink-2); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
   .chip:hover { color: var(--ink); border-color: var(--ink-2); }
   .chip[aria-pressed="true"] { color: var(--paper); background: var(--ink); border-color: var(--ink); }
   .chip:focus-visible, canvas:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -106,7 +105,7 @@
   .zoo { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
   .zoo li { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 56px; }
   .zoo canvas { width: 56px; height: 56px; background: var(--well); border-radius: 2px; }
-  .zoo small { font-size: 0.74rem; color: var(--ink-2); line-height: 1.15; text-align: center; font-variant-numeric: lining-nums; }
+  .zoo small { font-size: 0.74rem; color: var(--ink-2); line-height: 1.3; text-align: center; font-variant-numeric: lining-nums; }
   .zoo .ship small { color: var(--accent); }
   .zoo-empty { color: var(--ink-2); font-size: 0.9rem; font-style: italic; margin: 0; }
   .relatives { margin: 0; color: var(--ink-2); font-size: 0.84rem; line-height: 1.4; }
