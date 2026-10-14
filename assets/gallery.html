@@ -74,7 +74,7 @@
   .records { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
   .record { display: grid; grid-template-columns: 84px 1fr; gap: 14px; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 14px; }
   .record canvas { width: 84px; height: 84px; }
-  .record h3 { margin: 0; font-size: 0.95rem; font-variant: all-small-caps; letter-spacing: 0.08em; color: var(--ochre); font-weight: 600; }
+  .record h3 { margin: 0; font-size: 0.92rem; font-variant: all-small-caps; letter-spacing: 0.05em; color: var(--ochre); font-weight: 600; line-height: 1.25; }
   .record p { margin: 2px 0 0; line-height: 1.35; }
   .record .detail { color: var(--ink-2); font-size: 0.92rem; }
 
@@ -459,6 +459,8 @@
     `${data.specimens.length} rules chosen from the top of the ranking, skipping near-twins of rules already shown. ` +
     'Each plate runs a random soup live; trails show where cells have just been. Click a soup to reseed it.';
 
+  // Soups start a few dozen generations in, past the first burst of noise. `?warm=N` changes that.
+  const warm = Math.min(2000, Math.max(0, parseInt(new URLSearchParams(location.search).get('warm'), 10) || 60));
   const plates = document.getElementById('plates');
   for (const s of data.specimens) {
     const table = ruleTable(s.rule);
@@ -467,7 +469,7 @@
     let seed = s.rank * 7919;
     const reseed = () => { world.randomize(cfg.density, ++seed); };
     reseed();
-    for (let i = 0; i < 12; i++) world.step();
+    for (let i = 0; i < warm; i++) world.step();
     const view = new View(canvas, world, 70, reseed);
     canvas.addEventListener('click', () => { reseed(); view.playing = true; view.draw(); });
     register(view);
