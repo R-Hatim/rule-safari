@@ -1,0 +1,5 @@
+# Build output
+/target
+
+# Default output folder of `rule-safari hunt`
+/safari

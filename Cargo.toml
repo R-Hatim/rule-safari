@@ -1,0 +1,19 @@
+[package]
+name = "rule-safari"
+version = "0.1.0"
+edition = "2024"
+description = "Hunts through all 131,072 Life-like cellular automata for the interesting ones and catalogues the creatures it finds."
+license = "MIT"
+readme = "README.md"
+keywords = ["cellular-automata", "game-of-life", "simulation", "generative"]
+categories = ["command-line-utilities", "simulation"]
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+rayon = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[profile.release]
+codegen-units = 1
+lto = "thin"
