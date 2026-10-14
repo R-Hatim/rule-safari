@@ -68,14 +68,7 @@ impl Default for Config {
 impl Config {
     /// A few seconds instead of a minute: a sample of rules and smaller soups.
     pub fn quick() -> Config {
-        Config {
-            sample: Some(4096),
-            finalists: 96,
-            soup_size: 96,
-            soup_steps: 400,
-            nurseries: 16,
-            ..Config::default()
-        }
+        Config { sample: Some(4096), finalists: 96, soup_size: 96, soup_steps: 400, nurseries: 16, ..Config::default() }
     }
 }
 
@@ -127,7 +120,7 @@ pub fn run_soup(rule: Rule, size: usize, steps: u32, density: f64, rng: &mut Rng
             motions.push(moved as f64 / cells);
             lagged.copy_from_slice(sim.cells());
         }
-        if t >= snapshots_from && (steps - t) % 2 == 0 {
+        if t >= snapshots_from && (steps - t).is_multiple_of(2) {
             frames.extend_from_slice(sim.cells());
         }
         if cycles.observe(sim.fingerprint()).is_some() {
@@ -384,7 +377,7 @@ pub fn hunt(cfg: &Config, progress: impl Fn(Stage, usize, usize) + Sync) -> Hunt
         .map(|&rule| {
             let score = screen(rule, cfg);
             let d = done.fetch_add(1, Ordering::Relaxed) + 1;
-            if d % 1024 == 0 || d == total {
+            if d.is_multiple_of(1024) || d == total {
                 progress(Stage::Screen, d, total);
             }
             (rule, score)
@@ -408,7 +401,7 @@ pub fn hunt(cfg: &Config, progress: impl Fn(Stage, usize, usize) + Sync) -> Hunt
             let mut specimen = evaluate(rule, cfg);
             specimen.screen_rank = screened.iter().position(|(r, _)| *r == rule).map(|p| p + 1);
             let d = done.fetch_add(1, Ordering::Relaxed) + 1;
-            if d % 16 == 0 || d == total {
+            if d.is_multiple_of(16) || d == total {
                 progress(Stage::Study, d, total);
             }
             specimen

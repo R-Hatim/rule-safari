@@ -67,9 +67,9 @@ pub fn run(rule: Rule, opts: &Options) -> io::Result<()> {
     let delay = Duration::from_secs_f64(1.0 / opts.fps.max(1) as f64);
     write!(out, "\x1b[2J")?;
     for generation in 0..=opts.generations {
-        write!(
+        writeln!(
             out,
-            "\x1b[H\x1b[38;5;150m{}\x1b[0m{title} · generation {generation} · population {}\x1b[K\n",
+            "\x1b[H\x1b[38;5;150m{}\x1b[0m{title} · generation {generation} · population {}\x1b[K",
             render(&sim),
             sim.population()
         )?;

@@ -19,7 +19,11 @@ use crate::hunt::{Config, Specimen, Stage, Temperament};
 use crate::rule::Rule;
 
 #[derive(Parser)]
-#[command(name = "rule-safari", version, about = "Hunts through the 131,072 Life-like cellular automata for the interesting ones.")]
+#[command(
+    name = "rule-safari",
+    version,
+    about = "Hunts through the 131,072 Life-like cellular automata for the interesting ones."
+)]
 struct Cli {
     #[command(subcommand)]
     command: Command,
@@ -79,10 +83,14 @@ fn temperament_note(t: Temperament, steps: u32) -> String {
         Temperament::Extinct => "extinct: soups die out".into(),
         Temperament::Frozen => "frozen: soups lock up almost at once".into(),
         Temperament::SlowBurn => "slow burn: busy for a while, then settles".into(),
-        Temperament::Simmering => format!("simmering: never settles in {steps} generations, but only flickers in place"),
+        Temperament::Simmering => {
+            format!("simmering: never settles in {steps} generations, but only flickers in place")
+        }
         Temperament::Coagulating => format!("coagulating: lively for all {steps} generations, clumping into blobs"),
         Temperament::Teeming => format!("teeming: dense, and stirring everywhere for all {steps} generations"),
-        Temperament::Complex => format!("complex: lively for all {steps} generations, things travel through sparse space"),
+        Temperament::Complex => {
+            format!("complex: lively for all {steps} generations, things travel through sparse space")
+        }
         Temperament::Chaotic => format!("chaotic: never settles in {steps} generations, and looks like noise"),
     }
 }
@@ -92,6 +100,10 @@ fn title(s: &Specimen) -> String {
         Some(name) => format!("{} · {name}", s.rule),
         None => s.rule.clone(),
     }
+}
+
+fn plural(n: usize, one: &str, many: &str) -> String {
+    format!("{n} {}", if n == 1 { one } else { many })
 }
 
 fn pct(f: f64) -> String {
@@ -116,7 +128,12 @@ fn inspect(rule: Rule, seed: u64) {
         s.structure,
         pct(s.extinct)
     );
-    println!("  zoo          {} spaceships · {} oscillators · {} still lifes", s.ships, s.oscillators, s.still_lifes);
+    println!(
+        "  zoo          {} · {} · {}",
+        plural(s.ships, "spaceship", "spaceships"),
+        plural(s.oscillators, "oscillator", "oscillators"),
+        plural(s.still_lifes, "still life", "still lifes")
+    );
     if s.zoo.is_empty() {
         return;
     }
@@ -172,8 +189,17 @@ fn run_hunt(cfg: Config, out: PathBuf, top: usize) -> std::io::Result<()> {
     );
     println!("  rank  score  rule                        temperament  ships  oscillators");
     for (i, s) in result.specimens.iter().take(12).enumerate() {
-        let temperament = serde_json::to_value(s.temperament).ok().and_then(|v| v.as_str().map(str::to_owned)).unwrap_or_default();
-        println!("  {:>4}  {:>5.1}  {:<26}  {:<11}  {:>5}  {:>11}", i + 1, s.score, title(s), temperament, s.ships, s.oscillators);
+        let temperament =
+            serde_json::to_value(s.temperament).ok().and_then(|v| v.as_str().map(str::to_owned)).unwrap_or_default();
+        println!(
+            "  {:>4}  {:>5.1}  {:<26}  {:<11}  {:>5}  {:>11}",
+            i + 1,
+            s.score,
+            title(s),
+            temperament,
+            s.ships,
+            s.oscillators
+        );
     }
     if let Some(i) = result.specimens.iter().position(|s| s.value == Rule::LIFE) {
         println!("\n  Conway's Life ranks #{} of {} studied.", i + 1, result.specimens.len());
@@ -187,12 +213,8 @@ fn main() -> ExitCode {
     let outcome = match cli.command {
         Command::Hunt { out, seed, top, finalists, sample, quick } => {
             let base = if quick { Config::quick() } else { Config::default() };
-            let cfg = Config {
-                seed,
-                finalists: finalists.unwrap_or(base.finalists),
-                sample: sample.or(base.sample),
-                ..base
-            };
+            let cfg =
+                Config { seed, finalists: finalists.unwrap_or(base.finalists), sample: sample.or(base.sample), ..base };
             run_hunt(cfg, out, top)
         }
         Command::Inspect { rule, seed } => {

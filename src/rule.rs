@@ -91,10 +91,7 @@ const NAMED: &[(&str, &str)] = &[
 
 /// All named rules, parsed.
 pub fn named_rules() -> Vec<(Rule, &'static str)> {
-    NAMED
-        .iter()
-        .map(|(r, n)| (r.parse().expect("named rule strings are valid"), *n))
-        .collect()
+    NAMED.iter().map(|(r, n)| (r.parse().expect("named rule strings are valid"), *n)).collect()
 }
 
 fn digits(mask: u16) -> String {
@@ -128,9 +125,8 @@ impl FromStr for Rule {
             return Err("empty rule".into());
         }
         if !s.contains(['B', 'S']) {
-            let (survive, birth) = s
-                .split_once('/')
-                .ok_or_else(|| format!("'{s}' is not in B/S notation (e.g. B3/S23)"))?;
+            let (survive, birth) =
+                s.split_once('/').ok_or_else(|| format!("'{s}' is not in B/S notation (e.g. B3/S23)"))?;
             return Ok(Rule::new(mask(birth)?, mask(survive)?));
         }
         let (mut birth, mut survive) = (None, None);

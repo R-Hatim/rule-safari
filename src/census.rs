@@ -277,8 +277,12 @@ impl Census {
     pub fn species(&self) -> Vec<Species> {
         let mut all: Vec<Species> = self.species.values().cloned().collect();
         all.sort_by(|a, b| {
-            (a.kind, std::cmp::Reverse(a.sightings), a.population, &a.cells)
-                .cmp(&(b.kind, std::cmp::Reverse(b.sightings), b.population, &b.cells))
+            (a.kind, std::cmp::Reverse(a.sightings), a.population, &a.cells).cmp(&(
+                b.kind,
+                std::cmp::Reverse(b.sightings),
+                b.population,
+                &b.cells,
+            ))
         });
         all
     }
