@@ -1,7 +1,562 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><title>Rule Safari</title></head>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rule Safari</title>
+<meta name="description" content="A field guide to the Life-like cellular automata, written by rule-safari after screening all 131,072 rules without B0.">
+<style>
+  :root {
+    --paper: #f3eee2;
+    --card: #faf7f0;
+    --well: #ece5d5;
+    --ink: #1c2420;
+    --ink-2: #57625a;
+    --line: #d8cdb6;
+    --cell: #234d38;
+    --trail: #6c9a74;
+    --accent: #a8472a;
+    --ochre: #9a7322;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --mono: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #101512;
+      --card: #151c18;
+      --well: #0c110e;
+      --ink: #e6ece3;
+      --ink-2: #9eaba1;
+      --line: #27322b;
+      --cell: #b4e892;
+      --trail: #3f7d55;
+      --accent: #f0875a;
+      --ochre: #d8b25a;
+      color-scheme: dark;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 17px/1.55 var(--serif);
+    font-variant-numeric: oldstyle-nums;
+  }
+  a { color: inherit; text-decoration-color: var(--line); text-underline-offset: 3px; }
+  a:hover { text-decoration-color: var(--accent); }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+  .mono { font-family: var(--mono); font-size: 0.86em; font-variant-numeric: normal; }
+  .smallcaps { font-variant: all-small-caps; letter-spacing: 0.08em; }
+
+  /* Masthead */
+  .masthead { padding: 56px 0 40px; border-bottom: 1px solid var(--line); }
+  .kicker { color: var(--ochre); font-variant: all-small-caps; letter-spacing: 0.14em; font-size: 1rem; margin: 0 0 8px; }
+  h1 { font-size: clamp(2.8rem, 7vw, 5.2rem); line-height: 0.95; margin: 0 0 20px; font-weight: 600; letter-spacing: -0.02em; }
+  h1 em { font-weight: 400; color: var(--accent); }
+  .lede { font-size: 1.22rem; max-width: 46em; margin: 0; color: var(--ink); }
+  .lede + .lede { margin-top: 12px; color: var(--ink-2); font-size: 1.05rem; }
+  .stats { display: flex; flex-wrap: wrap; gap: 12px 40px; margin: 32px 0 0; padding: 0; list-style: none; }
+  .stats li { display: flex; flex-direction: column; }
+  .stats b { font-size: 1.9rem; font-weight: 600; line-height: 1.1; font-variant-numeric: lining-nums tabular-nums; }
+  .stats span { color: var(--ink-2); font-variant: all-small-caps; letter-spacing: 0.08em; }
+
+  /* Sections */
+  section { padding: 48px 0 8px; }
+  .section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; margin-bottom: 20px; }
+  h2 { font-size: 1.9rem; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+  .section-note { color: var(--ink-2); margin: 4px 0 0; max-width: 44em; }
+
+  /* Records */
+  .records { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
+  .record { display: grid; grid-template-columns: 84px 1fr; gap: 14px; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 14px; }
+  .record canvas { width: 84px; height: 84px; }
+  .record h3 { margin: 0; font-size: 0.95rem; font-variant: all-small-caps; letter-spacing: 0.08em; color: var(--ochre); font-weight: 600; }
+  .record p { margin: 2px 0 0; line-height: 1.35; }
+  .record .detail { color: var(--ink-2); font-size: 0.92rem; }
+
+  /* Filters */
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { font: inherit; font-size: 0.92rem; color: var(--ink-2); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 4px 13px; cursor: pointer; }
+  .chip:hover { color: var(--ink); border-color: var(--ink-2); }
+  .chip[aria-pressed="true"] { color: var(--paper); background: var(--ink); border-color: var(--ink); }
+  .chip:focus-visible, canvas:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .chip .n { font-variant-numeric: lining-nums; opacity: 0.7; margin-left: 4px; }
+
+  /* Specimens */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(272px, 1fr)); gap: 20px; }
+  .plate { background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 14px 14px 16px; display: flex; flex-direction: column; gap: 10px; scroll-margin-top: 24px; }
+  .plate:target { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+  .plate-head { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+  .rank { color: var(--ochre); font-variant: all-small-caps; letter-spacing: 0.06em; white-space: nowrap; font-variant-numeric: lining-nums; }
+  .rule { font-family: var(--mono); font-weight: 600; font-size: 0.95rem; overflow-wrap: anywhere; }
+  .common { font-style: italic; color: var(--accent); margin-left: auto; white-space: nowrap; }
+  .soup { display: block; width: 100%; aspect-ratio: 1; background: var(--well); border-radius: 2px; cursor: pointer; image-rendering: pixelated; }
+  canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
+  .temper { display: flex; align-items: baseline; gap: 8px; margin: 0; font-size: 0.95rem; }
+  .temper b { font-weight: 600; }
+  .temper span { color: var(--ink-2); font-size: 0.88rem; line-height: 1.35; }
+  .measures { display: grid; grid-template-columns: repeat(4, auto); justify-content: space-between; gap: 4px 10px; margin: 0; padding-top: 8px; border-top: 1px solid var(--line); }
+  .measures div { display: flex; flex-direction: column; }
+  .measures dt { color: var(--ink-2); font-variant: all-small-caps; letter-spacing: 0.06em; font-size: 0.88rem; }
+  .measures dd { margin: 0; font-variant-numeric: lining-nums tabular-nums; }
+  .zoo { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
+  .zoo li { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 56px; }
+  .zoo canvas { width: 56px; height: 56px; background: var(--well); border-radius: 2px; }
+  .zoo small { font-size: 0.74rem; color: var(--ink-2); line-height: 1.15; text-align: center; font-variant-numeric: lining-nums; }
+  .zoo .ship small { color: var(--accent); }
+  .zoo-empty { color: var(--ink-2); font-size: 0.9rem; font-style: italic; margin: 0; }
+  .relatives { margin: 0; color: var(--ink-2); font-size: 0.84rem; line-height: 1.4; }
+  .relatives .mono { font-size: 0.92em; }
+
+  /* Famous rules */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 4px; background: var(--card); }
+  table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
+  th, td { text-align: left; padding: 8px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { font-weight: 600; font-variant: all-small-caps; letter-spacing: 0.07em; color: var(--ink-2); }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.num { text-align: right; font-variant-numeric: lining-nums tabular-nums; }
+  th.num { text-align: right; }
+  .passed { color: var(--cell); }
+  .bar { display: inline-block; height: 6px; background: var(--trail); border-radius: 3px; vertical-align: middle; margin-left: 8px; }
+
+  /* Method */
+  .method { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px 32px; margin: 0; padding: 0; list-style: none; counter-reset: step; }
+  .method li { counter-increment: step; border-top: 2px solid var(--ink); padding-top: 10px; }
+  .method li::before { content: counter(step, upper-roman) "."; color: var(--ochre); font-variant: all-small-caps; margin-right: 6px; }
+  .method b { font-weight: 600; }
+  .method p { margin: 6px 0 0; color: var(--ink-2); }
+
+  footer { margin-top: 56px; padding: 24px 0 40px; border-top: 1px solid var(--line); color: var(--ink-2); font-size: 0.92rem; }
+  .empty-note { display: none; }
+  body.empty .empty-note { display: block; padding: 48px 0; }
+
+  @media (max-width: 560px) {
+    .wrap { padding: 0 16px; }
+    body { font-size: 16px; }
+    .masthead { padding: 36px 0 28px; }
+    .stats { gap: 12px 28px; }
+    .stats b { font-size: 1.5rem; }
+    .record { grid-template-columns: 64px 1fr; }
+    .record canvas { width: 64px; height: 64px; }
+  }
+</style>
+</head>
 <body>
+<header class="masthead">
+  <div class="wrap">
+    <p class="kicker">A field guide to the Life-like universes</p>
+    <h1>Rule <em>Safari</em></h1>
+    <p class="lede" id="lede">Conway's Game of Life is one rule among 262,144 of the same shape: a dead cell is born when it has certain numbers of live neighbours, and a live cell survives with certain others.</p>
+    <p class="lede" id="lede-2"></p>
+    <ul class="stats" id="stats"></ul>
+  </div>
+</header>
+
+<main class="wrap">
+  <p class="empty-note">This page has no hunt data yet. Run <span class="mono">rule-safari hunt</span> to write one.</p>
+
+  <section id="records" aria-labelledby="records-title">
+    <div class="section-head">
+      <div>
+        <h2 id="records-title">Records</h2>
+        <p class="section-note">The notable creatures of this expedition, alive.</p>
+      </div>
+    </div>
+    <div class="records" id="record-list"></div>
+  </section>
+
+  <section id="specimens" aria-labelledby="specimens-title">
+    <div class="section-head">
+      <div>
+        <h2 id="specimens-title">Specimens</h2>
+        <p class="section-note" id="specimens-note"></p>
+      </div>
+      <div class="filters" id="filters" role="group" aria-label="Filter by temperament"></div>
+    </div>
+    <div class="grid" id="plates"></div>
+  </section>
+
+  <section id="famous" aria-labelledby="famous-title">
+    <div class="section-head">
+      <div>
+        <h2 id="famous-title">Where the famous rules landed</h2>
+        <p class="section-note" id="famous-note"></p>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th class="num">Rank</th><th>Rule</th><th>Name</th><th>Temperament</th><th class="num">Score</th><th class="num">Ships</th><th>Screen</th></tr></thead>
+        <tbody id="famous-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="method" aria-labelledby="method-title">
+    <div class="section-head"><h2 id="method-title">How the hunt works</h2></div>
+    <ol class="method" id="method-steps"></ol>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap" id="colophon">Written by rule-safari.</div>
+</footer>
+
 <script id="safari-data" type="application/json">__SAFARI_DATA__</script>
+<script>
+(() => {
+  'use strict';
+
+  let data = null;
+  try { data = JSON.parse(document.getElementById('safari-data').textContent); } catch (_) { /* template without data */ }
+  if (!data || !Array.isArray(data.specimens)) { document.body.classList.add('empty'); return; }
+
+  const TEMPERAMENTS = {
+    'complex': ['Complex', 'lively throughout; small things travel through sparse space'],
+    'teeming': ['Teeming', 'dense, and stirring everywhere at once'],
+    'coagulating': ['Coagulating', 'lively, clumping into large blobs'],
+    'slow-burn': ['Slow burn', 'busy for a while, then settles'],
+    'simmering': ['Simmering', 'never settles, but only flickers in place'],
+    'chaotic': ['Chaotic', 'never settles, and looks like noise'],
+    'frozen': ['Frozen', 'locks up almost at once'],
+    'extinct': ['Extinct', 'soups die out'],
+  };
+  const temperName = t => (TEMPERAMENTS[t] || [t])[0];
+  const fmt = n => Number(n).toLocaleString('en-US');
+  const pct = f => (f * 100).toFixed(f < 0.1 ? 1 : 0) + '%';
+  const anchor = rule => 'r-' + rule.replace('/', '-');
+  const el = (tag, props = {}, ...children) => {
+    const node = document.createElement(tag);
+    for (const [k, v] of Object.entries(props)) {
+      if (k === 'class') node.className = v;
+      else if (k === 'text') node.textContent = v;
+      else node.setAttribute(k, v);
+    }
+    for (const c of children) if (c != null) node.append(c);
+    return node;
+  };
+
+  /* ---------- Simulation ---------- */
+
+  function ruleTable(text) {
+    const m = /^B([0-8]*)\/S([0-8]*)$/.exec(text);
+    const table = new Uint8Array(18);
+    if (m) {
+      for (const d of m[1]) table[+d] = 1;
+      for (const d of m[2]) table[9 + +d] = 1;
+    }
+    return table;
+  }
+
+  function mulberry32(seed) {
+    return () => {
+      seed = (seed + 0x6d2b79f5) | 0;
+      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  class World {
+    constructor(table, w, h) {
+      this.table = table; this.w = w; this.h = h;
+      this.cells = new Uint8Array(w * h);
+      this.next = new Uint8Array(w * h);
+      this.heat = new Float32Array(w * h);
+      this.generation = 0; this.population = 0; this.quiet = 0;
+    }
+    randomize(density, seed) {
+      const rand = mulberry32(seed);
+      this.population = 0;
+      for (let i = 0; i < this.cells.length; i++) {
+        this.cells[i] = rand() < density ? 1 : 0;
+        this.heat[i] = this.cells[i];
+        this.population += this.cells[i];
+      }
+      this.generation = 0; this.quiet = 0;
+    }
+    place(cells) {
+      const cw = Math.max(...cells.map(c => c[0])) + 1, ch = Math.max(...cells.map(c => c[1])) + 1;
+      const ox = (this.w - cw) >> 1, oy = (this.h - ch) >> 1;
+      this.cells.fill(0);
+      for (const [x, y] of cells) this.cells[(oy + y) * this.w + ox + x] = 1;
+      this.heat.set(this.cells);
+      this.generation = 0;
+    }
+    step() {
+      const { w, h, cells, next, table, heat } = this;
+      let changed = 0, alive = 0;
+      for (let y = 0; y < h; y++) {
+        const up = (y === 0 ? h - 1 : y - 1) * w, row = y * w, down = (y === h - 1 ? 0 : y + 1) * w;
+        for (let x = 0; x < w; x++) {
+          const l = x === 0 ? w - 1 : x - 1, r = x === w - 1 ? 0 : x + 1;
+          const n = cells[up + l] + cells[up + x] + cells[up + r] + cells[row + l] + cells[row + r]
+                  + cells[down + l] + cells[down + x] + cells[down + r];
+          const me = cells[row + x];
+          const v = table[me * 9 + n];
+          next[row + x] = v;
+          changed += v !== me;
+          alive += v;
+          heat[row + x] = v ? 1 : heat[row + x] * 0.8;
+        }
+      }
+      this.cells = next; this.next = cells;
+      this.generation++; this.population = alive;
+      this.quiet = changed === 0 ? this.quiet + 1 : 0;
+    }
+  }
+
+  /* ---------- Drawing ---------- */
+
+  function hexToRgb(value) {
+    const hex = value.trim().replace('#', '');
+    const full = hex.length === 3 ? hex.split('').map(c => c + c).join('') : hex;
+    return [0, 2, 4].map(i => parseInt(full.slice(i, i + 2), 16));
+  }
+  let palette;
+  function readPalette() {
+    const cs = getComputedStyle(document.documentElement);
+    palette = { well: hexToRgb(cs.getPropertyValue('--well')), cell: hexToRgb(cs.getPropertyValue('--cell')), trail: hexToRgb(cs.getPropertyValue('--trail')) };
+  }
+  readPalette();
+
+  class View {
+    constructor(canvas, world, every, onReset) {
+      this.canvas = canvas; this.world = world; this.every = every; this.onReset = onReset;
+      canvas.width = world.w; canvas.height = world.h;
+      this.ctx = canvas.getContext('2d');
+      this.image = this.ctx.createImageData(world.w, world.h);
+      this.due = 0; this.playing = true;
+    }
+    draw() {
+      const d = this.image.data, { cells, heat } = this.world, { well, cell, trail } = palette;
+      for (let i = 0, p = 0; i < cells.length; i++, p += 4) {
+        if (cells[i]) { d[p] = cell[0]; d[p + 1] = cell[1]; d[p + 2] = cell[2]; }
+        else {
+          const t = heat[i] * 0.7;
+          d[p] = well[0] + (trail[0] - well[0]) * t;
+          d[p + 1] = well[1] + (trail[1] - well[1]) * t;
+          d[p + 2] = well[2] + (trail[2] - well[2]) * t;
+        }
+        d[p + 3] = 255;
+      }
+      this.ctx.putImageData(this.image, 0, 0);
+    }
+    tick(now) {
+      if (!this.playing || now < this.due) return;
+      this.due = now + this.every;
+      this.world.step();
+      if (this.onReset && (this.world.population === 0 || this.world.quiet > 40)) this.onReset();
+      this.draw();
+    }
+  }
+
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const views = new Map();
+  const visible = new Set();
+  const observer = new IntersectionObserver(entries => {
+    for (const e of entries) {
+      const v = views.get(e.target);
+      if (e.isIntersecting) visible.add(v); else visible.delete(v);
+    }
+  }, { rootMargin: '120px' });
+
+  function register(view) {
+    views.set(view.canvas, view);
+    view.draw();
+    if (reducedMotion) view.playing = false;
+    observer.observe(view.canvas);
+    view.canvas.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); view.canvas.click(); }
+    });
+  }
+
+  function loop(now) {
+    for (const v of visible) v.tick(now);
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    readPalette();
+    for (const v of views.values()) v.draw();
+  });
+
+  function creatureCanvas(creature, rule, size) {
+    const canvas = el('canvas', { role: 'img', tabindex: '0', 'aria-label': describe(creature) });
+    const span = Math.max(creature.width, creature.height);
+    const field = Math.max(size, span + (creature.kind === 'spaceship' ? 9 : 6));
+    const world = new World(ruleTable(rule), field, field);
+    world.place(creature.cells);
+    const view = new View(canvas, world, creature.kind === 'spaceship' ? 140 : 260, null);
+    canvas.title = describe(creature) + ' (click to restart)';
+    canvas.addEventListener('click', () => { world.place(creature.cells); view.playing = true; view.draw(); });
+    register(view);
+    return canvas;
+  }
+
+  function describe(c) {
+    if (c.kind === 'spaceship') return `Spaceship, ${c.speed}, period ${c.period}, ${c.population} cells, seen ${c.sightings} times`;
+    if (c.kind === 'oscillator') return `Oscillator, period ${c.period}, ${c.population} cells, seen ${c.sightings} times`;
+    return `Still life, ${c.population} cells, seen ${c.sightings} times`;
+  }
+
+  function shortLabel(c) {
+    if (c.kind === 'spaceship') return c.speed.replace(' orthogonal', ' orth.').replace(' diagonal', ' diag.').replace(' oblique', ' obl.');
+    if (c.kind === 'oscillator') return 'p' + c.period;
+    return 'still';
+  }
+
+  /* ---------- Masthead ---------- */
+
+  const meta = data.meta, cfg = meta.config, totals = data.totals;
+  const finalists = cfg.finalists;
+  const life = data.named.find(n => n.rule === 'B3/S23');
+  let second = `This expedition screened all ${fmt(meta.screened)} of them that keep empty space empty, studied ${fmt(meta.studied)} up close, and catalogued the creatures living there.`;
+  if (meta.screened < 131072) second = `This expedition screened a sample of ${fmt(meta.screened)} of them, studied ${fmt(meta.studied)} up close, and catalogued the creatures living there.`;
+  if (life) {
+    second += ` The hunt never sees rule names, yet it put Life itself at No. ${life.rank}`;
+    second += life.screenRank && life.screenRank <= finalists
+      ? `, after it passed the first screen at No. ${fmt(life.screenRank)}.`
+      : `; it was studied because every named rule is.`;
+  }
+  document.getElementById('lede-2').textContent = second;
+
+  const stats = [
+    [fmt(meta.screened), 'rules screened'],
+    [fmt(meta.studied), 'studied closely'],
+    [fmt(totals.ships), `spaceships, in ${fmt(totals.rulesWithShips)} rules`],
+    [fmt(totals.oscillators), 'oscillators'],
+    [meta.seconds < 120 ? `${meta.seconds.toFixed(0)}s` : `${(meta.seconds / 60).toFixed(1)}min`, 'of hunting'],
+  ];
+  const statList = document.getElementById('stats');
+  for (const [value, label] of stats) statList.append(el('li', {}, el('b', { text: value }), el('span', { text: label })));
+
+  /* ---------- Records ---------- */
+
+  const recordList = document.getElementById('record-list');
+  for (const r of data.records) {
+    const title = r.name ? `${r.rule} · ${r.name}` : r.rule;
+    const ruleLink = el('a', { href: '#' + anchor(r.rule), class: 'mono', text: title });
+    const card = el('article', { class: 'record' },
+      r.creature ? creatureCanvas(r.creature, r.rule, 13) : el('div'),
+      el('div', {}, el('h3', { text: r.title }), el('p', {}, ruleLink), el('p', { class: 'detail', text: r.detail })));
+    recordList.append(card);
+  }
+  if (!data.records.length) document.getElementById('records').hidden = true;
+
+  /* ---------- Specimens ---------- */
+
+  const shown = new Set(data.specimens.map(s => s.rule));
+  for (const r of recordList.querySelectorAll('a')) {
+    if (!shown.has(r.textContent.split(' · ')[0])) r.removeAttribute('href');
+  }
+
+  document.getElementById('specimens-note').textContent =
+    `${data.specimens.length} rules chosen from the top of the ranking, skipping near-twins of rules already shown. ` +
+    'Each plate runs a random soup live; trails show where cells have just been. Click a soup to reseed it.';
+
+  const plates = document.getElementById('plates');
+  for (const s of data.specimens) {
+    const table = ruleTable(s.rule);
+    const canvas = el('canvas', { class: 'soup', role: 'img', tabindex: '0', 'aria-label': `Live soup of ${s.rule}. Click to reseed.` });
+    const world = new World(table, 96, 96);
+    let seed = s.rank * 7919;
+    const reseed = () => { world.randomize(cfg.density, ++seed); };
+    reseed();
+    for (let i = 0; i < 12; i++) world.step();
+    const view = new View(canvas, world, 70, reseed);
+    canvas.addEventListener('click', () => { reseed(); view.playing = true; view.draw(); });
+    register(view);
+
+    const [tName, tNote] = TEMPERAMENTS[s.temperament] || [s.temperament, ''];
+    const head = el('header', { class: 'plate-head' },
+      el('span', { class: 'rank', text: `No. ${s.rank}` }),
+      el('span', { class: 'rule', text: s.rule }),
+      s.name ? el('span', { class: 'common', text: s.name }) : null);
+    const temper = el('p', { class: 'temper' }, el('b', { text: tName }), el('span', { text: tNote }));
+    const measure = (label, value) => el('div', {}, el('dt', { text: label }), el('dd', { text: value }));
+    const measures = el('dl', { class: 'measures' },
+      measure('score', s.score.toFixed(1)), measure('motion', pct(s.motion)),
+      measure('density', pct(s.density)), measure('lifespan', pct(s.lifespan)));
+
+    let zoo;
+    const creatures = s.zoo.filter(c => c.kind !== 'still').slice(0, 5);
+    const stills = s.zoo.filter(c => c.kind === 'still');
+    if (creatures.length < 5) creatures.push(...stills.slice(0, 5 - creatures.length));
+    if (creatures.length) {
+      zoo = el('ul', { class: 'zoo', 'aria-label': `Creatures found in ${s.rule}` });
+      for (const c of creatures) zoo.append(el('li', { class: c.kind === 'spaceship' ? 'ship' : '' }, creatureCanvas(c, s.rule, 9), el('small', { text: shortLabel(c) })));
+    } else {
+      zoo = el('p', { class: 'zoo-empty', text: 'No small creatures caught.' });
+    }
+    const tally = el('p', { class: 'relatives', text: `${s.ships} spaceship${s.ships === 1 ? '' : 's'} · ${s.oscillators} oscillators · ${s.stillLifes} still lifes catalogued` });
+    const relatives = s.relatives && s.relatives.length
+      ? el('p', { class: 'relatives' }, 'Close relatives: ', el('span', { class: 'mono', text: s.relatives.join(' · ') }))
+      : null;
+
+    const plate = el('article', { class: 'plate', id: anchor(s.rule), 'data-temperament': s.temperament },
+      head, canvas, temper, measures, zoo, tally, relatives);
+    plates.append(plate);
+  }
+
+  /* ---------- Filters ---------- */
+
+  const filters = document.getElementById('filters');
+  const counts = {};
+  for (const s of data.specimens) counts[s.temperament] = (counts[s.temperament] || 0) + 1;
+  const chips = [];
+  const addChip = (key, label, n) => {
+    const chip = el('button', { class: 'chip', type: 'button', 'aria-pressed': key === 'all' ? 'true' : 'false' }, label, el('span', { class: 'n', text: String(n) }));
+    chip.addEventListener('click', () => {
+      for (const c of chips) c.setAttribute('aria-pressed', String(c === chip));
+      for (const p of plates.children) p.hidden = key !== 'all' && p.dataset.temperament !== key;
+    });
+    chips.push(chip);
+    filters.append(chip);
+  };
+  addChip('all', 'All', data.specimens.length);
+  for (const key of Object.keys(TEMPERAMENTS)) if (counts[key]) addChip(key, temperName(key), counts[key]);
+
+  /* ---------- Famous rules ---------- */
+
+  document.getElementById('famous-note').textContent =
+    `Named rules from LifeWiki are always studied, so you can see where they stand among the ${fmt(meta.studied)} studied rules. ` +
+    `"Screen" is each rule's place among all ${fmt(meta.screened)} after the quick first pass; the top ${fmt(finalists)} went on by merit.`;
+  const rows = document.getElementById('famous-rows');
+  const best = Math.max(...data.named.map(n => n.score), 1);
+  for (const n of data.named) {
+    const ruleCell = shown.has(n.rule) ? el('a', { href: '#' + anchor(n.rule), text: n.rule }) : document.createTextNode(n.rule);
+    const passed = n.screenRank && n.screenRank <= finalists;
+    const screen = n.screenRank ? `No. ${fmt(n.screenRank)}` : 'not screened';
+    rows.append(el('tr', {},
+      el('td', { class: 'num', text: String(n.rank) }),
+      el('td', { class: 'mono' }, ruleCell),
+      el('td', { text: n.name }),
+      el('td', { text: temperName(n.temperament) }),
+      el('td', { class: 'num' }, n.score.toFixed(1), el('span', { class: 'bar', style: `width:${Math.round(40 * n.score / best)}px`, 'aria-hidden': 'true' })),
+      el('td', { class: 'num', text: String(n.ships) }),
+      el('td', { class: passed ? 'passed' : '', text: passed ? `${screen}, passed` : screen })));
+  }
+
+  /* ---------- Method ---------- */
+
+  const steps = [
+    ['Screen', `Every rule gets ${cfg.screenSoups} random soups of ${cfg.screenSize}×${cfg.screenSize} cells for ${cfg.screenSteps} generations, plus ${cfg.screenNurseries} tiny seeds dropped in empty space. The best ${fmt(finalists)} move on.`],
+    ['Study', `Finalists, and every named rule, get ${cfg.soups} soups of ${cfg.soupSize}×${cfg.soupSize} for ${cfg.soupSteps} generations and ${cfg.nurseries} nurseries: small random seeds in a quiet ${cfg.nurserySize}×${cfg.nurserySize} field, where creatures can escape the crowd.`],
+    ['Census', `Every isolated object is replayed alone on an empty grid. If it comes back to its own shape within ${cfg.maxPeriod} generations it is catalogued as a still life, an oscillator, or, if it came back somewhere else, a spaceship.`],
+    ['Score', 'Just over half is liveliness: the share of cells that differ from 12 generations earlier, which cancels flicker and rewards things that travel without turning into noise. The rest is the zoo, where spaceships count most.'],
+  ];
+  const method = document.getElementById('method-steps');
+  for (const [title, text] of steps) method.append(el('li', {}, el('b', { text: title }), el('p', { text })));
+
+  const when = new Date(meta.generatedAt * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  document.getElementById('colophon').textContent =
+    `Written by rule-safari ${meta.version} on ${when}, seed ${cfg.seed}. Every number here is in results.json, next to this page.`;
+})();
+</script>
 </body>
 </html>

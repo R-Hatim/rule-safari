@@ -35,7 +35,8 @@ fn creatures(hunt: &Hunt, kind: Kind) -> impl Iterator<Item = (&Specimen, &Speci
 
 pub fn records(hunt: &Hunt) -> Vec<Record> {
     let mut out = Vec::new();
-    let ship_detail = |c: &Species| format!("{}, {} cells, period {}", c.speed.as_deref().unwrap_or("?"), c.population, c.period);
+    let ship_detail =
+        |c: &Species| format!("{}, {} cells, period {}", c.speed.as_deref().unwrap_or("?"), c.population, c.period);
     let fastest = creatures(hunt, Kind::Spaceship)
         .max_by(|a, b| a.1.speed_value().total_cmp(&b.1.speed_value()).then(b.1.population.cmp(&a.1.population)));
     if let Some((s, c)) = fastest {
@@ -46,7 +47,9 @@ pub fn records(hunt: &Hunt) -> Vec<Record> {
     if let Some((s, c)) = slowest {
         out.push(record("Slowest spaceship", s, ship_detail(c), Some(c)));
     }
-    if let Some((s, c)) = creatures(hunt, Kind::Spaceship).find(|(_, c)| c.dx != 0 && c.dy != 0 && c.dx.abs() != c.dy.abs()) {
+    if let Some((s, c)) =
+        creatures(hunt, Kind::Spaceship).find(|(_, c)| c.dx != 0 && c.dy != 0 && c.dx.abs() != c.dy.abs())
+    {
         out.push(record("Oblique spaceship", s, ship_detail(c), Some(c)));
     }
     let biggest = creatures(hunt, Kind::Spaceship).max_by_key(|(_, c)| (c.population, std::cmp::Reverse(c.period)));
@@ -55,10 +58,17 @@ pub fn records(hunt: &Hunt) -> Vec<Record> {
     }
     let longest = creatures(hunt, Kind::Oscillator).max_by_key(|(_, c)| (c.period, std::cmp::Reverse(c.population)));
     if let Some((s, c)) = longest {
-        out.push(record("Longest-period oscillator", s, format!("period {}, {} cells", c.period, c.population), Some(c)));
+        out.push(record(
+            "Longest-period oscillator",
+            s,
+            format!("period {}, {} cells", c.period, c.population),
+            Some(c),
+        ));
     }
-    if let Some(s) = hunt.specimens.iter().max_by_key(|s| (s.ships, s.oscillators, std::cmp::Reverse(s.value.index()))) {
-        let detail = format!("{} kinds of spaceship, {} oscillators, {} still lifes", s.ships, s.oscillators, s.still_lifes);
+    if let Some(s) = hunt.specimens.iter().max_by_key(|s| (s.ships, s.oscillators, std::cmp::Reverse(s.value.index())))
+    {
+        let detail =
+            format!("{} kinds of spaceship, {} oscillators, {} still lifes", s.ships, s.oscillators, s.still_lifes);
         out.push(record("Richest zoo", s, detail, s.zoo.first()));
     }
     out
@@ -184,7 +194,8 @@ pub fn render_gallery(data: &Value) -> String {
 pub fn write(hunt: &Hunt, dir: &Path, top: usize) -> io::Result<(PathBuf, PathBuf)> {
     fs::create_dir_all(dir)?;
     let mut results = gallery_data(hunt, usize::MAX);
-    results["specimens"] = json!(hunt.specimens.iter().enumerate().map(|(i, s)| with_rank(s, i + 1, 16)).collect::<Vec<_>>());
+    results["specimens"] =
+        json!(hunt.specimens.iter().enumerate().map(|(i, s)| with_rank(s, i + 1, 16)).collect::<Vec<_>>());
     let results_path = dir.join("results.json");
     fs::write(&results_path, serde_json::to_string_pretty(&results).expect("results serialize"))?;
     let gallery_path = dir.join("gallery.html");
@@ -231,7 +242,8 @@ mod tests {
         assert_eq!(specimens[0]["rank"], 1);
         assert!(specimens.iter().all(|s| s["zoo"].as_array().unwrap().len() <= 8));
         assert!(data["named"].as_array().unwrap().iter().any(|n| n["name"] == "Life"));
-        let titles: Vec<&str> = data["records"].as_array().unwrap().iter().map(|r| r["title"].as_str().unwrap()).collect();
+        let titles: Vec<&str> =
+            data["records"].as_array().unwrap().iter().map(|r| r["title"].as_str().unwrap()).collect();
         assert!(titles.contains(&"Richest zoo"), "{titles:?}");
     }
 
