@@ -2,6 +2,7 @@
 name = "rule-safari"
 version = "0.1.0"
 edition = "2024"
+rust-version = "1.87"
 description = "Hunts through all 131,072 Life-like cellular automata for the interesting ones and catalogues the creatures it finds."
 license = "MIT"
 readme = "README.md"
