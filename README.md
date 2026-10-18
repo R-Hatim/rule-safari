@@ -4,6 +4,8 @@
 
 **[See the live field guide →](https://r-hatim.github.io/rule-safari/)** It's the default hunt's gallery, running in your browser, with nothing to install.
 
+**[Read how it works →](https://hrih.si/articles/scoring-131072-universes/)** An article on hrih.si about the hunt and the twelve-generation trick behind its score, with a rule lab you can play with.
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/gallery-dark.png">
   <img alt="The field guide Rule Safari writes: records of the hunt, then live specimen plates" src="docs/gallery.png">
